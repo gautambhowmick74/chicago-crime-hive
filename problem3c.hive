@@ -1,0 +1,17 @@
+--/************************************************ Problem 3c *****************************/
+--/* Q: Output the top 5 crimes reported near Hospitals, Churches or Schools in 2018?      */
+--/*****************************************************************************************/
+
+select ranknnum,"          ",primary_type from 
+            (select *, RANK() OVER(ORDER BY total_cases desc) as ranknnum
+              from
+                  ( select primary_type,
+                           count(distinct Case_Number) total_cases
+                    from ChicagoCrimes
+                    where IF(Year >= 2001, Year, from_unixtime(unix_timestamp(report_date, 'MM/dd/yyyy hh:mm:ss a'),'yyyy'))  = 2018
+                      and (location_description like '%CHURCH%' or location_description like '%HOSPITAL%' or location_description like '%SCHOOL%'  )
+                    group by primary_type
+                    order by primary_type) temp 
+             ) final
+where ranknnum <=5
+order by ranknnum;

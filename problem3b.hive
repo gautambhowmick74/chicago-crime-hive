@@ -1,0 +1,20 @@
+--/************************************************ Problem 3b *****************************/
+--/* Q: Output the locations that saw a drop in the number of reported crimes in 2018 as   */
+--/* compared to the previous year (2017).                                                 */
+--/*****************************************************************************************/
+
+select distinct location_description from (
+              select *,
+                     case when
+                           total_cases < lag(total_cases, 1) over (partition by location_description order by crime_yr)
+                     then 'True' else 'False' end crime_up_or_down
+              from
+                  ( select location_description,
+                           IF(Year >= 2001, Year, from_unixtime(unix_timestamp(report_date, 'MM/dd/yyyy hh:mm:ss a'),'yyyy')) as crime_yr,
+                           count(distinct Case_Number) total_cases
+                    from ChicagoCrimes
+                    where IF(Year >= 2001, Year, from_unixtime(unix_timestamp(report_date, 'MM/dd/yyyy hh:mm:ss a'),'yyyy'))  between 2017 and 2018
+                    group by location_description, IF(Year >= 2001, Year, from_unixtime(unix_timestamp(report_date, 'MM/dd/yyyy hh:mm:ss a'),'yyyy'))
+                    order by location_description,crime_yr) temp) final
+where crime_up_or_down = 'True'
+order by location_description;

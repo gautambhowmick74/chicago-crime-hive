@@ -1,0 +1,18 @@
+--/************************************************ Problem 3a *****************************/
+--/* Q:  Output the IUCR (Illinois Uniform Crime Reporting) departments have efficiency    */
+--/* rate of atleast 95% for major crimes in 2018. Major crimes are defined as follows:    */
+--/* DOMESTIC VIOLENCE,CRIM SEXUAL ASSAULT,CRIMINAL DAMAGE,CRIMINAL TRESPASS,HOMICIDE,     */
+--/* SEX OFFENSE,HUMAN TRAFFICKING,NARCOTICS,KIDNAPPING                                    */
+--/*****************************************************************************************/
+
+select distinct IUCR, "       ", round((Arrest_Count/Total_Case_Count)*100,2) efficiency_percent from
+    (select IUCR, IF(Year >= 2001, Year, from_unixtime(unix_timestamp(report_date, 'MM/dd/yyyy hh:mm:ss a'),'yyyy')),
+                count(*) Total_Case_Count,
+               sum(case when Arrest = true then 1 else 0 end) Arrest_Count
+         from ChicagoCrimes
+         where primary_type in ( 'DOMESTIC VIOLENCE','CRIM SEXUAL ASSAULT','CRIMINAL DAMAGE','CRIMINAL TRESPASS','HOMICIDE','SEX OFFENSE','HUMAN TRAFFICKING','NARCOTICS','KIDNAPPING') 
+           and IF(Year >= 2001, Year, from_unixtime(unix_timestamp(report_date, 'MM/dd/yyyy hh:mm:ss a'),'yyyy'))=2018
+         group by IUCR, IF(Year >= 2001, Year, from_unixtime(unix_timestamp(report_date, 'MM/dd/yyyy hh:mm:ss a'),'yyyy'))
+        ) tmp
+where round((Arrest_Count/Total_Case_Count)*100,2) >=95
+order by efficiency_percent desc, IUCR;

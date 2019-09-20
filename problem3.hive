@@ -1,0 +1,44 @@
+SET hive.exec.dynamic.partition.mode=nonstrict;
+
+--/************************************** Problem 3 ***************************************/
+--/* Q Find a large publicly available data set and create 3-5 interesting questions      */
+--/*   about that dataset and answer them                                                 */
+--/****************************************************************************************/
+
+
+--/************************************************ ***************************************/
+--/* data is downloaded from:                                                             */
+--/* wget https://data.cityofchicago.org/api/views/ijzp-q8t2/rows.csv                     */
+--/* Renamed this file to 'ChicagoCrimes.csv'                                             */
+--/* From 'Crimes_-_2001_to_present.csv'                                                  */
+--/* before place it to: /user/maria_dev/final/ChicagoCrimes                              */
+--/****************************************************************************************/
+
+DROP TABLE IF EXISTS ChicagoCrimes;
+
+CREATE EXTERNAL TABLE ChicagoCrimes(
+ID                      INT,
+Case_Number             STRING,
+Report_Date             STRING,
+Block                   STRING,
+IUCR                    INT,
+Primary_Type            STRING,
+Description             STRING,
+Location_Description    STRING,
+Arrest                  BOOLEAN,
+Domestic                BOOLEAN,
+Beat                    INT,
+District                INT,
+Ward                    INT,
+Community_Area          INT,
+FBI_Code                STRING,
+X_Coordinate            INT,
+Y_Coordinate            INT,
+Year                    INT,
+Updated_On              STRING,
+Latitude                DOUBLE,
+Longitude               DOUBLE,
+Location                STRING
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' LOCATION '/user/maria_dev/final/ChicagoCrimes';
+SELECT * FROM ChicagoCrimes LIMIT 10;

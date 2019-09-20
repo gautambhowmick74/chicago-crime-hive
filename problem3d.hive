@@ -1,0 +1,15 @@
+--/************************************************ Problem 3d *****************************/
+--/* Q: Output the top 10 worst neighborhood to live in between the years 2012 to 2018.    */
+--/* A neighborhood is considered worse or unsafe where there is a high number of crimes.  */
+--/*****************************************************************************************/
+
+select ranknum, "          ",block, "                     ",total_cases
+from ( select *, RANK() OVER(ORDER BY total_cases desc) as ranknum
+       from (select Block,
+                    count(distinct Case_Number) total_cases
+             from ChicagoCrimes
+             where IF(Year >= 2001, Year, from_unixtime(unix_timestamp(report_date, 'MM/dd/yyyy hh:mm:ss a'),'yyyy'))  between 2012 and 2018
+             group by Block ) temp
+    ) final
+where ranknum <=10
+order by ranknum;
